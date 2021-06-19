@@ -1,0 +1,57 @@
+From 4766a7a62b11c932f483724294aca5b69d2c0194 Mon Sep 17 00:00:00 2001
+From: Assam Boudjelthia <assam.boudjelthia@qt.io>
+Date: Sat, 24 Oct 2020 16:31:37 +0300
+Subject: [PATCH 020/196] Android: replace stacktrace with debug message in
+ search for setActivity
+
+Don't print stacktrace when setActivity is not found but only print a
+debug message, QtActivityDelegate will continue to look for setContext
+which might actually be a problem if not implemented.
+
+Fixes: QTBUG-86733
+Change-Id: Iaf7f347ae04605a1f616f24d25cac4938c1640a4
+Reviewed-by: Ville Voutilainen <ville.voutilainen@qt.io>
+Reviewed-by: Rami Potinkara <rami.potinkara@qt.io>
+(cherry picked from commit 950e628fd842f22ac741b18440fcc99213820587)
+Reviewed-by: Andy Shaw <andy.shaw@qt.io>
+(cherry picked from commit 46a12ef0c33893d1864f9a6c8b25b37a5976803b)
+---
+ .../src/org/qtproject/qt5/android/QtActivityDelegate.java   | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/android/jar/src/org/qtproject/qt5/android/QtActivityDelegate.java b/src/android/jar/src/org/qtproject/qt5/android/QtActivityDelegate.java
+index b7689dc519..742505c39a 100644
+--- a/src/android/jar/src/org/qtproject/qt5/android/QtActivityDelegate.java
++++ b/src/android/jar/src/org/qtproject/qt5/android/QtActivityDelegate.java
+@@ -95,6 +95,7 @@ import java.lang.reflect.Constructor;
+ import java.lang.reflect.Method;
+ import java.util.ArrayList;
+ import java.util.HashMap;
++import java.util.Objects;
+ 
+ import org.qtproject.qt5.android.accessibility.QtAccessibilityDelegate;
+ 
+@@ -575,7 +576,7 @@ public class QtActivityDelegate
+         QtNative.setActivity(m_activity, this);
+         QtNative.setClassLoader(classLoader);
+         if (loaderParams.containsKey(STATIC_INIT_CLASSES_KEY)) {
+-            for (String className: loaderParams.getStringArray(STATIC_INIT_CLASSES_KEY)) {
++            for (String className: Objects.requireNonNull(loaderParams.getStringArray(STATIC_INIT_CLASSES_KEY))) {
+                 if (className.length() == 0)
+                     continue;
+ 
+@@ -586,9 +587,10 @@ public class QtActivityDelegate
+                       Method m = initClass.getMethod("setActivity", Activity.class, Object.class);
+                       m.invoke(staticInitDataObject, m_activity, this);
+                   } catch (Exception e) {
+-                      e.printStackTrace();
++                      Log.d(QtNative.QtTAG, "Class " + className + " does not implement setActivity method");
+                   }
+ 
++                  // For modules that don't need/have setActivity
+                   try {
+                       Method m = initClass.getMethod("setContext", Context.class);
+                       m.invoke(staticInitDataObject, (Context)m_activity);
+-- 
+2.25.1
+

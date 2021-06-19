@@ -1,0 +1,109 @@
+From f1f650dc3aaf21df064703a9dcf405a222229226 Mon Sep 17 00:00:00 2001
+From: Edward Welbourne <edward.welbourne@qt.io>
+Date: Mon, 26 Oct 2020 14:39:54 +0100
+Subject: [PATCH 007/196] Deprecate ordering on QItemSelectionRange
+
+Ready for removal at Qt 6, as advocated in a ### comment.
+It was never done consistently with operator==(), apparently, and
+should not be needed in any case.
+
+[ChangeLog][QtCore][QItemSelectionRange] Ordering of
+QItemSelectionRange is now deprecated. It was not consistent with
+equality and should not be needed.
+
+Task-number: QTBUG-85700
+Change-Id: Ie99294bd7fc18f2a497598ae08840886b0a6d62d
+Reviewed-by: Lars Knoll <lars.knoll@qt.io>
+(cherry picked from commit 29c113d912fdf96f99503c9635bf89c4cabcc6fb)
+Reviewed-by: Qt Cherry-pick Bot <cherrypick_bot@qt-project.org>
+---
+ src/corelib/itemmodels/qitemselectionmodel.cpp              | 4 +++-
+ src/corelib/itemmodels/qitemselectionmodel.h                | 6 ++++--
+ .../qitemselectionmodel/tst_qitemselectionmodel.cpp         | 4 ++++
+ 3 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/src/corelib/itemmodels/qitemselectionmodel.cpp b/src/corelib/itemmodels/qitemselectionmodel.cpp
+index 27442fb2fa..6eadc77f78 100644
+--- a/src/corelib/itemmodels/qitemselectionmodel.cpp
++++ b/src/corelib/itemmodels/qitemselectionmodel.cpp
+@@ -1,6 +1,6 @@
+ /****************************************************************************
+ **
+-** Copyright (C) 2016 The Qt Company Ltd.
++** Copyright (C) 2020 The Qt Company Ltd.
+ ** Contact: https://www.qt.io/licensing/
+ **
+ ** This file is part of the QtCore module of the Qt Toolkit.
+@@ -274,6 +274,7 @@ QItemSelectionRange QItemSelectionRange::intersected(const QItemSelectionRange &
+ 
+ */
+ 
++#if QT_DEPRECATED_SINCE(5, 15)
+ /*!
+     Returns \c true if the selection range is less than the \a other
+     range given; otherwise returns \c false.
+@@ -312,6 +313,7 @@ bool QItemSelectionRange::operator<(const QItemSelectionRange &other) const
+     std::less<const QAbstractItemModel *> less;
+     return less(tl.model(), other.tl.model());
+ }
++#endif
+ 
+ /*!
+     \fn bool QItemSelectionRange::isValid() const
+diff --git a/src/corelib/itemmodels/qitemselectionmodel.h b/src/corelib/itemmodels/qitemselectionmodel.h
+index 5820695592..d79fb89156 100644
+--- a/src/corelib/itemmodels/qitemselectionmodel.h
++++ b/src/corelib/itemmodels/qitemselectionmodel.h
+@@ -1,6 +1,6 @@
+ /****************************************************************************
+ **
+-** Copyright (C) 2016 The Qt Company Ltd.
++** Copyright (C) 2020 The Qt Company Ltd.
+ ** Contact: https://www.qt.io/licensing/
+ **
+ ** This file is part of the QtCore module of the Qt Toolkit.
+@@ -114,7 +114,9 @@ public:
+         { return (tl == other.tl && br == other.br); }
+     inline bool operator!=(const QItemSelectionRange &other) const
+         { return !operator==(other); }
+-    bool operator<(const QItemSelectionRange &other) const;
++#if QT_DEPRECATED_SINCE(5, 15)
++    QT_DEPRECATED bool operator<(const QItemSelectionRange &other) const;
++#endif
+ 
+     inline bool isValid() const
+     {
+diff --git a/tests/auto/corelib/itemmodels/qitemselectionmodel/tst_qitemselectionmodel.cpp b/tests/auto/corelib/itemmodels/qitemselectionmodel/tst_qitemselectionmodel.cpp
+index 6b59a6f1af..12cc584773 100644
+--- a/tests/auto/corelib/itemmodels/qitemselectionmodel/tst_qitemselectionmodel.cpp
++++ b/tests/auto/corelib/itemmodels/qitemselectionmodel/tst_qitemselectionmodel.cpp
+@@ -82,8 +82,10 @@ private slots:
+     void layoutChangedWithAllSelected2();
+     void layoutChangedTreeSelection();
+     void deselectRemovedMiddleRange();
++#if QT_DEPRECATED_SINCE(5, 15)
+     void rangeOperatorLessThan_data();
+     void rangeOperatorLessThan();
++#endif
+     void setModel();
+ 
+     void testDifferentModels();
+@@ -2441,6 +2443,7 @@ static QStandardItemModel* getModel(QObject *parent)
+     return model;
+ }
+ 
++#if QT_DEPRECATED_SINCE(5, 15)
+ enum Result {
+     LessThan,
+     NotLessThan,
+@@ -2575,6 +2578,7 @@ void tst_QItemSelectionModel::rangeOperatorLessThan()
+     if (!(r2 < r4))
+         QVERIFY(r4 < r2);
+ }
++#endif
+ 
+ void tst_QItemSelectionModel::setModel()
+ {
+-- 
+2.25.1
+

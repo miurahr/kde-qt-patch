@@ -1,0 +1,561 @@
+From b8518414c3ca1fe9eb32a2fe740a730b3104d36f Mon Sep 17 00:00:00 2001
+From: Edward Welbourne <edward.welbourne@qt.io>
+Date: Tue, 20 Oct 2020 11:18:14 +0200
+Subject: [PATCH 008/196] Deprecate QLocale::Language entries that no locale
+ data relates to
+
+These are languages for which CLDR does not even recognize the claimed
+language code (three-letter codes except for bh = Bihari, which might
+be an old name for bho = Bhojpuri, which CLDR does give, but provides
+no locale data using it).
+
+[ChangeLog][QtCore][QLocale::Language] Many obsolete language names
+are now deprecated in preparation for removal at Qt 6.0. No data has
+been available for any locale using these languages since CLDR v29 (at
+least; Qt now uses v37).
+
+Task-number: QTBUG-84669
+Change-Id: I2bf2d49211ade7cc511277f35fb1a247e7048b31
+Reviewed-by: Lars Knoll <lars.knoll@qt.io>
+(cherry picked from commit 2575a8ced39b607ed320ed230c83119eaad4b33b)
+Reviewed-by: Qt Cherry-pick Bot <cherrypick_bot@qt-project.org>
+---
+ src/corelib/text/qlocale.h                    | 132 ++++++++++++------
+ src/corelib/text/qlocale.qdoc                 |  86 ++++++------
+ .../auto/corelib/text/qlocale/tst_qlocale.cpp |  22 +--
+ 3 files changed, 144 insertions(+), 96 deletions(-)
+
+diff --git a/src/corelib/text/qlocale.h b/src/corelib/text/qlocale.h
+index f975a28761..64dd32cabc 100644
+--- a/src/corelib/text/qlocale.h
++++ b/src/corelib/text/qlocale.h
+@@ -93,7 +93,9 @@ public:
+         Basque = 14,
+         Bengali = 15,
+         Dzongkha = 16,
+-        Bihari = 17,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Bihari Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 17,
++#endif
+         Bislama = 18,
+         Breton = 19,
+         Bulgarian = 20,
+@@ -326,7 +328,9 @@ public:
+         Nuer = 247,
+         Sakha = 248,
+         Sangu = 249,
+-        CongoSwahili = 250,
++#if QT_DEPRECATED_SINCE(5, 15)
++        CongoSwahili Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 250,
++#endif
+         Tasawaq = 251,
+         Vai = 252,
+         Walser = 253,
+@@ -346,47 +350,69 @@ public:
+         Bamun = 267,
+         BatakToba = 268,
+         Buginese = 269,
+-        Buhid = 270,
+-        Carian = 271,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Buhid Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 270,
++        Carian Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 271,
++#endif
+         Chakma = 272,
+-        ClassicalMandaic = 273,
++#if QT_DEPRECATED_SINCE(5, 15)
++        ClassicalMandaic Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 273,
++#endif
+         Coptic = 274,
+         Dogri = 275,
+-        EasternCham = 276,
+-        EasternKayah = 277,
+-        Etruscan = 278,
++#if QT_DEPRECATED_SINCE(5, 15)
++        EasternCham Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 276,
++        EasternKayah Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 277,
++        Etruscan Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 278,
++#endif
+         Gothic = 279,
+-        Hanunoo = 280,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Hanunoo Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 280,
++#endif
+         Ingush = 281,
+-        LargeFloweryMiao = 282,
+-        Lepcha = 283,
+-        Limbu = 284,
+-        Lisu = 285,
+-        Lu = 286,
+-        Lycian = 287,
+-        Lydian = 288,
++#if QT_DEPRECATED_SINCE(5, 15)
++        LargeFloweryMiao Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 282,
++        Lepcha Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 283,
++        Limbu Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 284,
++        Lisu Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 285,
++        Lu Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 286,
++        Lycian Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 287,
++        Lydian Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 288,
++#endif
+         Mandingo = 289,
+         Manipuri = 290,
+-        Meroitic = 291,
+-        NorthernThai = 292,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Meroitic Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 291,
++        NorthernThai Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 292,
++#endif
+         OldIrish = 293,
+         OldNorse = 294,
+         OldPersian = 295,
+-        OldTurkish = 296,
++#if QT_DEPRECATED_SINCE(5, 15)
++        OldTurkish Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 296,
++#endif
+         Pahlavi = 297,
+-        Parthian = 298,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Parthian Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 298,
++#endif
+         Phoenician = 299,
+-        PrakritLanguage = 300,
+-        Rejang = 301,
+-        Sabaean = 302,
+-        Samaritan = 303,
++#if QT_DEPRECATED_SINCE(5, 15)
++        PrakritLanguage Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 300,
++        Rejang Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 301,
++        Sabaean Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 302,
++        Samaritan Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 303,
++#endif
+         Santali = 304,
+         Saurashtra = 305,
+-        Sora = 306,
+-        Sylheti = 307,
+-        Tagbanwa = 308,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Sora Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 306,
++        Sylheti Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 307,
++        Tagbanwa Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 308,
++#endif
+         TaiDam = 309,
+-        TaiNua = 310,
++#if QT_DEPRECATED_SINCE(5, 15)
++        TaiNua Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 310,
++#endif
+         Ugaritic = 311,
+         Akoose = 312,
+         Lakota = 313,
+@@ -405,37 +431,57 @@ public:
+         InariSami = 326,
+         SkoltSami = 327,
+         Warlpiri = 328,
+-        ManichaeanMiddlePersian = 329,
++#if QT_DEPRECATED_SINCE(5, 15)
++        ManichaeanMiddlePersian Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 329,
++#endif
+         Mende = 330,
+-        AncientNorthArabian = 331,
+-        LinearA = 332,
+-        HmongNjua = 333,
+-        Ho = 334,
++#if QT_DEPRECATED_SINCE(5, 15)
++        AncientNorthArabian Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 331,
++        LinearA Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 332,
++        HmongNjua Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 333,
++        Ho Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 334,
++#endif
+         Lezghian = 335,
+-        Bassa = 336,
+-        Mono = 337,
+-        TedimChin = 338,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Bassa Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 336,
++        Mono Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 337,
++        TedimChin Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 338,
++#endif
+         Maithili = 339,
+-        Ahom = 340,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Ahom Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 340,
++#endif
+         AmericanSignLanguage = 341,
+-        ArdhamagadhiPrakrit = 342,
++#if QT_DEPRECATED_SINCE(5, 15)
++        ArdhamagadhiPrakrit Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 342,
++#endif
+         Bhojpuri = 343,
+-        HieroglyphicLuwian = 344,
++#if QT_DEPRECATED_SINCE(5, 15)
++        HieroglyphicLuwian Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 344,
++#endif
+         LiteraryChinese = 345,
+         Mazanderani = 346,
+-        Mru = 347,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Mru Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 347,
++#endif
+         Newari = 348,
+         NorthernLuri = 349,
+         Palauan = 350,
+         Papiamento = 351,
+-        Saraiki = 352,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Saraiki Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 352,
++#endif
+         TokelauLanguage = 353,
+         TokPisin = 354,
+         TuvaluLanguage = 355,
+-        UncodedLanguages = 356,
++#if QT_DEPRECATED_SINCE(5, 15)
++        UncodedLanguages Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 356,
++#endif
+         Cantonese = 357,
+         Osage = 358,
+-        Tangut = 359,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Tangut Q_DECL_ENUMERATOR_DEPRECATED_X("No locale data for this language") = 359,
++#endif
+         Ido = 360,
+         Lojban = 361,
+         Sicilian = 362,
+diff --git a/src/corelib/text/qlocale.qdoc b/src/corelib/text/qlocale.qdoc
+index b79f178a5e..56f65766dd 100644
+--- a/src/corelib/text/qlocale.qdoc
++++ b/src/corelib/text/qlocale.qdoc
+@@ -111,7 +111,7 @@
+     \value Afar
+     \value Afrikaans
+     \value Aghem
+-    \value Ahom Since Qt 5.7
++    \value Ahom Obsolete, no locale data available
+     \value Akan
+     \value Akkadian Since Qt 5.1
+     \value Akoose Since Qt 5.3
+@@ -120,11 +120,11 @@
+     \value Amharic
+     \value AncientEgyptian Since Qt 5.1
+     \value AncientGreek Since Qt 5.1
+-    \value AncientNorthArabian Since Qt 5.5
++    \value AncientNorthArabian Obsolete, no locale data available
+     \value Arabic
+     \value Aragonese Since Qt 5.1
+     \value Aramaic Since Qt 5.1
+-    \value ArdhamagadhiPrakrit Since Qt 5.7
++    \value ArdhamagadhiPrakrit Obsolete, no locale data available
+     \value Armenian
+     \value Assamese
+     \value Asturian
+@@ -141,7 +141,7 @@
+     \value Basaa
+     \value Bashkir
+     \value Basque
+-    \value Bassa Since Qt 5.5
++    \value Bassa Obsolete, no locale data available
+     \value BatakToba Since Qt 5.1
+     \value Belarusian
+     \value Bemba
+@@ -149,20 +149,20 @@
+     \value Bengali
+     \value Bhojpuri Since Qt 5.7
+     \value Bhutani Obsolete, please use Dzongkha
+-    \value Bihari
++    \value Bihari Obsolete, no locale data available
+     \value Bislama
+     \value Blin
+     \value Bodo
+     \value Bosnian
+     \value Breton
+     \value Buginese Since Qt 5.1
+-    \value Buhid Since Qt 5.1
++    \value Buhid Obsolete, no locale data available
+     \value Bulgarian
+     \value Burmese
+     \value Byelorussian Obsolete, please use Belarusian
+     \value Cambodian Obsolete, please use Khmer
+     \value Cantonese Since Qt 5.7
+-    \value Carian Since Qt 5.1
++    \value Carian Obsolete, no locale data available
+     \value Catalan
+     \value Cebuano Since Qt 5.14
+     \value CentralKurdish Since Qt 5.5
+@@ -177,9 +177,9 @@
+     \value Chinese (Mandarin)
+     \value Church
+     \value Chuvash
+-    \value ClassicalMandaic Since Qt 5.1
++    \value ClassicalMandaic Obsolete, no locale data available
+     \value Colognian
+-    \value CongoSwahili
++    \value CongoSwahili Obsolete, no locale data available
+     \value Coptic Since Qt 5.1
+     \value Cornish
+     \value Corsican
+@@ -192,14 +192,14 @@
+     \value Duala
+     \value Dutch
+     \value Dzongkha
+-    \value EasternCham Since Qt 5.1
+-    \value EasternKayah Since Qt 5.1
++    \value EasternCham Obsolete, no locale data available
++    \value EasternKayah Obsolete, no locale data available
+     \value Embu
+     \value English
+     \value Erzya Since Qt 5.14
+     \value Esperanto
+     \value Estonian
+-    \value Etruscan Since Qt 5.1
++    \value Etruscan Obsolete, no locale data available
+     \value Ewe
+     \value Ewondo
+     \value Faroese
+@@ -224,16 +224,16 @@
+     \value Gujarati
+     \value Gusii
+     \value Haitian
+-    \value Hanunoo Since Qt 5.1
++    \value Hanunoo Obsolete, no locale data available
+     \value Hausa
+     \value Hawaiian
+     \value Hebrew
+     \value Herero
+-    \value HieroglyphicLuwian Since Qt 5.7
++    \value HieroglyphicLuwian Obsolete, no locale data available
+     \value Hindi
+     \value HiriMotu
+-    \value HmongNjua Since Qt 5.5
+-    \value Ho Since Qt 5.5
++    \value HmongNjua Obsolete, no locale data available
++    \value Ho Obsolete, no locale data available
+     \value Hungarian
+     \value Icelandic
+     \value Ido Since Qt 5.12
+@@ -281,16 +281,16 @@
+     \value Lakota Since Qt 5.3
+     \value Langi
+     \value Lao
+-    \value LargeFloweryMiao Since Qt 5.1
++    \value LargeFloweryMiao Obsolete, no locale data available
+     \value Latin
+     \value Latvian
+-    \value Lepcha Since Qt 5.1
++    \value Lepcha Obsolete, no locale data available
+     \value Lezghian Since Qt 5.5
+     \value Limburgish
+-    \value Limbu Since Qt 5.1
+-    \value LinearA Since Qt 5.5
++    \value Limbu Obsolete, no locale data available
++    \value LinearA Obsolete, no locale data available
+     \value Lingala
+-    \value Lisu Since Qt 5.1
++    \value Lisu Obsolete, no locale data available
+     \value LiteraryChinese Since Qt 5.7
+     \value Lithuanian
+     \value Lojban Since Qt 5.12
+@@ -299,11 +299,11 @@
+     \value LubaKatanga
+     \value LuleSami Since Qt 5.5
+     \value Luo
+-    \value Lu Since Qt 5.1
++    \value Lu Obsolete, no locale data available
+     \value Luxembourgish
+     \value Luyia
+-    \value Lycian Since Qt 5.1
+-    \value Lydian Since Qt 5.1
++    \value Lycian Obsolete, no locale data available
++    \value Lydian Obsolete, no locale data available
+     \value Macedonian
+     \value Machame
+     \value Maithili Since Qt 5.5
+@@ -314,7 +314,7 @@
+     \value Malayalam
+     \value Maltese
+     \value Mandingo Since Qt 5.1
+-    \value ManichaeanMiddlePersian Since Qt 5.5
++    \value ManichaeanMiddlePersian Obsolete, no locale data available
+     \value Manipuri Since Qt 5.1
+     \value Manx
+     \value Maori
+@@ -324,15 +324,15 @@
+     \value Masai
+     \value Mazanderani Since Qt 5.7
+     \value Mende Since Qt 5.5
+-    \value Meroitic Since Qt 5.1
++    \value Meroitic Obsolete, no locale data available
+     \value Meru
+     \value Meta
+     \value Mohawk Since Qt 5.5
+     \value Moldavian Obsolete, please use Romanian
+     \value Mongolian
+-    \value Mono Since Qt 5.5
++    \value Mono Obsolete, no locale data available
+     \value Morisyen
+-    \value Mru Since Qt 5.7
++    \value Mru Obsolete, no locale data available
+     \value Mundang
+     \value Muscogee Since Qt 5.14
+     \value Nama
+@@ -347,7 +347,7 @@
+     \value NorthernLuri Since Qt 5.7
+     \value NorthernSami
+     \value NorthernSotho
+-    \value NorthernThai Since Qt 5.1
++    \value NorthernThai Obsolete, no locale data available
+     \value NorthNdebele
+     \value NorwegianBokmal same as Norwegian
+     \value NorwegianNynorsk
+@@ -360,7 +360,7 @@
+     \value OldIrish Since Qt 5.1
+     \value OldNorse Since Qt 5.1
+     \value OldPersian Since Qt 5.1
+-    \value OldTurkish Since Qt 5.1
++    \value OldTurkish Obsolete, no locale data available
+     \value Oriya
+     \value Oromo
+     \value Osage Since Qt 5.7
+@@ -369,17 +369,17 @@
+     \value Palauan Since Qt 5.7
+     \value Pali
+     \value Papiamento Since Qt 5.7
+-    \value Parthian Since Qt 5.1
++    \value Parthian Obsolete, no locale data available
+     \value Pashto
+     \value Persian
+     \value Phoenician Since Qt 5.1
+     \value Polish
+     \value Portuguese
+-    \value PrakritLanguage Since Qt 5.1
++    \value PrakritLanguage Obsolete, no locale data available
+     \value Prussian Since Qt 5.5
+     \value Punjabi
+     \value Quechua
+-    \value Rejang Since Qt 5.1
++    \value Rejang Obsolete, no locale data available
+     \value RhaetoRomance Obsolete, please use Romansh
+     \value Romanian
+     \value Romansh
+@@ -387,17 +387,17 @@
+     \value Rundi
+     \value Russian
+     \value Rwa
+-    \value Sabaean Since Qt 5.1
++    \value Sabaean Obsolete, no locale data available
+     \value Saho
+     \value Sakha
+-    \value Samaritan Since Qt 5.1
++    \value Samaritan Obsolete, no locale data available
+     \value Samburu
+     \value Samoan
+     \value Sango
+     \value Sangu
+     \value Sanskrit
+     \value Santali Since Qt 5.1
+-    \value Saraiki Since Qt 5.7
++    \value Saraiki Obsolete, no locale data available
+     \value Sardinian
+     \value Saurashtra Since Qt 5.1
+     \value Sena
+@@ -416,7 +416,7 @@
+     \value Slovenian
+     \value Soga
+     \value Somali
+-    \value Sora Since Qt 5.1
++    \value Sora Obsolete, no locale data available
+     \value SouthernKurdish Since Qt 5.12
+     \value SouthernSami Since Qt 5.5
+     \value SouthernSotho
+@@ -428,22 +428,22 @@
+     \value Swati
+     \value Swedish
+     \value SwissGerman
+-    \value Sylheti Since Qt 5.1
++    \value Sylheti Obsolete, no locale data available
+     \value Syriac
+     \value Tachelhit
+     \value Tagalog Obsolete, please use Filipino
+-    \value Tagbanwa Since Qt 5.1
++    \value Tagbanwa Obsolete, no locale data available
+     \value Tahitian
+     \value TaiDam Since Qt 5.1
+-    \value TaiNua Since Qt 5.1
++    \value TaiNua Obsolete, no locale data available
+     \value Taita
+     \value Tajik
+     \value Tamil
+-    \value Tangut Since Qt 5.7
++    \value Tangut Obsolete, no locale data available
+     \value Taroko
+     \value Tasawaq
+     \value Tatar
+-    \value TedimChin Since Qt 5.5
++    \value TedimChin Obsolete, no locale data available
+     \value Telugu
+     \value Teso
+     \value Thai
+@@ -464,7 +464,7 @@
+     \value Uighur
+     \value Uigur Obsolete, please use Uighur
+     \value Ukrainian
+-    \value UncodedLanguages Since Qt 5.7
++    \value UncodedLanguages Obsolete, no locale data available
+     \value UpperSorbian Since Qt 5.5
+     \value Urdu
+     \value Uzbek
+diff --git a/tests/auto/corelib/text/qlocale/tst_qlocale.cpp b/tests/auto/corelib/text/qlocale/tst_qlocale.cpp
+index 62654adc6a..1afbc169a7 100644
+--- a/tests/auto/corelib/text/qlocale/tst_qlocale.cpp
++++ b/tests/auto/corelib/text/qlocale/tst_qlocale.cpp
+@@ -2779,13 +2779,23 @@ void tst_QLocale::textDirection_data()
+         bool rightToLeft = false;
+         switch (language) {
+         // based on likelySubtags for RTL scripts
+-        case QLocale::AncientGreek:
++#if QT_DEPRECATED_SINCE(5, 15)
+         case QLocale::AncientNorthArabian:
++        case QLocale::ClassicalMandaic:
++        case QLocale::Lydian:
++        case QLocale::ManichaeanMiddlePersian:
++        case QLocale::Meroitic:
++        case QLocale::OldTurkish:
++        case QLocale::Parthian:
++        case QLocale::PrakritLanguage:
++        case QLocale::Sabaean:
++        case QLocale::Samaritan:
++#endif
++        case QLocale::AncientGreek:
+         case QLocale::Arabic:
+         case QLocale::Aramaic:
+         case QLocale::Avestan:
+         case QLocale::CentralKurdish:
+-        case QLocale::ClassicalMandaic:
+         case QLocale::Divehi:
+ //        case QLocale::Fulah:
+ //        case QLocale::Hausa:
+@@ -2793,23 +2803,15 @@ void tst_QLocale::textDirection_data()
+ //        case QLocale::Hungarian:
+         case QLocale::Kashmiri:
+ //        case QLocale::Kurdish:
+-        case QLocale::Lydian:
+         case QLocale::Mandingo:
+-        case QLocale::ManichaeanMiddlePersian:
+         case QLocale::Mazanderani:
+         case QLocale::Mende:
+-        case QLocale::Meroitic:
+         case QLocale::Nko:
+         case QLocale::NorthernLuri:
+-        case QLocale::OldTurkish:
+         case QLocale::Pahlavi:
+-        case QLocale::Parthian:
+         case QLocale::Pashto:
+         case QLocale::Persian:
+         case QLocale::Phoenician:
+-        case QLocale::PrakritLanguage:
+-        case QLocale::Sabaean:
+-        case QLocale::Samaritan:
+         case QLocale::Sindhi:
+         case QLocale::SouthernKurdish:
+         case QLocale::Syriac:
+-- 
+2.25.1
+

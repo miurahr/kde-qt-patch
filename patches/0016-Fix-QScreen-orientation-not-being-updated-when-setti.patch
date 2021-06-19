@@ -1,0 +1,47 @@
+From 699bf0c4ca531913593548916fecb16428779536 Mon Sep 17 00:00:00 2001
+From: Friedemann Kleint <Friedemann.Kleint@qt.io>
+Date: Tue, 27 Oct 2020 10:31:53 +0100
+Subject: [PATCH 016/196] Fix QScreen orientation not being updated when
+ setting a platform screen
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+ScreenPrivate::updatePrimaryOrientation() depends on the geometry
+being set which is calculated by updateHighDpi().
+Move the call up.
+Amends 370289bef68d8505b66cb27150a3f596e23c5ed3.
+
+Task-number: QTBUG-76902
+Change-Id: I8188e04ad4a2ef7d414a2b78ecb3dd6c64528fa6
+Reviewed-by: Tor Arne Vestbø <tor.arne.vestbo@qt.io>
+(cherry picked from commit d10c34b0cc896c711fce8ae5629e3cc3d74b6452)
+Reviewed-by: Qt Cherry-pick Bot <cherrypick_bot@qt-project.org>
+---
+ src/gui/kernel/qscreen.cpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/gui/kernel/qscreen.cpp b/src/gui/kernel/qscreen.cpp
+index a1afc1ba14..8e0eb35116 100644
+--- a/src/gui/kernel/qscreen.cpp
++++ b/src/gui/kernel/qscreen.cpp
+@@ -118,13 +118,13 @@ void QScreenPrivate::setPlatformScreen(QPlatformScreen *screen)
+     if (refreshRate < 1.0)
+         refreshRate = 60.0;
+ 
+-    updatePrimaryOrientation();
++    updateHighDpi();
++
++    updatePrimaryOrientation(); // derived from the geometry
+ 
+     filteredOrientation = orientation;
+     if (filteredOrientation == Qt::PrimaryOrientation)
+         filteredOrientation = primaryOrientation;
+-
+-    updateHighDpi();
+ }
+ 
+ 
+-- 
+2.25.1
+

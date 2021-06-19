@@ -1,0 +1,32 @@
+From ac60faa58e8f059e46161a3c7563f23831acc37e Mon Sep 17 00:00:00 2001
+From: Helio Chissini de Castro <helio@kde.org>
+Date: Sun, 11 Oct 2020 19:16:55 +0200
+Subject: [PATCH 051/196] Fix compilation when using -no-mimetype-database
+
+Change-Id: I4f706a26d73f61e4a6022338e0fc0be48627e4a1
+Reviewed-by: Thiago Macieira <thiago.macieira@intel.com>
+Reviewed-by: David Faure <david.faure@kdab.com>
+(cherry picked from commit c67ea659e5447fc2d898dbb78189bfe22893522c)
+---
+ src/corelib/mimetypes/qmimeprovider.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/corelib/mimetypes/qmimeprovider.cpp b/src/corelib/mimetypes/qmimeprovider.cpp
+index 846b65802d..12ce442f70 100644
+--- a/src/corelib/mimetypes/qmimeprovider.cpp
++++ b/src/corelib/mimetypes/qmimeprovider.cpp
+@@ -699,7 +699,11 @@ bool QMimeXMLProvider::isValid()
+ 
+ bool QMimeXMLProvider::isInternalDatabase() const
+ {
++#if QT_CONFIG(mimetype_database)
+     return m_directory == internalMimeFileName();
++#else
++    return false;
++#endif
+ }
+ 
+ QMimeType QMimeXMLProvider::mimeTypeForName(const QString &name)
+-- 
+2.25.1
+

@@ -1,0 +1,235 @@
+From 9fbc5f148910dfb3fcca5f242a88f4726a72e484 Mon Sep 17 00:00:00 2001
+From: Edward Welbourne <edward.welbourne@qt.io>
+Date: Tue, 20 Oct 2020 11:41:13 +0200
+Subject: [PATCH 009/196] Deprecate old aliases for two countries and several
+ languages
+
+[ChangeLog][QtCore][QLocale] Deprecated several Language and Country
+aliases, ready for removal in Qt 6.0, in favor of their newer names.
+
+Task-number: QTBUG-84669
+Change-Id: Iebaa0a5a77bfa12f7014de53fab4a25b5f1cc92c
+Reviewed-by: Lars Knoll <lars.knoll@qt.io>
+(cherry picked from commit 2c4874be40aa40b698315cac0ad768e5c650a740)
+Reviewed-by: Edward Welbourne <edward.welbourne@qt.io>
+---
+ src/corelib/text/qlocale.cpp                  | 24 +++++++------------
+ src/corelib/text/qlocale.h                    | 20 ++++++++++------
+ src/corelib/text/qlocale.qdoc                 |  4 ++--
+ .../corelib/text/qcollator/tst_qcollator.cpp  |  4 ++--
+ .../auto/corelib/text/qlocale/tst_qlocale.cpp | 14 +++++------
+ .../qdoublespinbox/tst_qdoublespinbox.cpp     | 14 +++++------
+ .../widgets/widgets/qspinbox/tst_qspinbox.cpp |  2 +-
+ 7 files changed, 40 insertions(+), 42 deletions(-)
+
+diff --git a/src/corelib/text/qlocale.cpp b/src/corelib/text/qlocale.cpp
+index 4617168781..bfd7b15e6b 100644
+--- a/src/corelib/text/qlocale.cpp
++++ b/src/corelib/text/qlocale.cpp
+@@ -115,22 +115,14 @@ QLocale::Language QLocalePrivate::codeToLanguage(QStringView code) noexcept
+ 
+     if (uc3 == 0) {
+         // legacy codes
+-        if (uc1 == 'n' && uc2 == 'o') { // no -> nb
+-            Q_STATIC_ASSERT(QLocale::Norwegian == QLocale::NorwegianBokmal);
+-            return QLocale::Norwegian;
+-        }
+-        if (uc1 == 't' && uc2 == 'l') { // tl -> fil
+-            Q_STATIC_ASSERT(QLocale::Tagalog == QLocale::Filipino);
+-            return QLocale::Tagalog;
+-        }
+-        if (uc1 == 's' && uc2 == 'h') { // sh -> sr[_Latn]
+-            Q_STATIC_ASSERT(QLocale::SerboCroatian == QLocale::Serbian);
+-            return QLocale::SerboCroatian;
+-        }
+-        if (uc1 == 'm' && uc2 == 'o') { // mo -> ro
+-            Q_STATIC_ASSERT(QLocale::Moldavian == QLocale::Romanian);
+-            return QLocale::Moldavian;
+-        }
++        if (uc1 == 'n' && uc2 == 'o') // no -> nb
++            return QLocale::NorwegianBokmal;
++        if (uc1 == 't' && uc2 == 'l') // tl -> fil
++            return QLocale::Filipino;
++        if (uc1 == 's' && uc2 == 'h') // sh -> sr[_Latn]
++            return QLocale::Serbian;
++        if (uc1 == 'm' && uc2 == 'o') // mo -> ro
++            return QLocale::Romanian;
+         // Android uses the following deprecated codes
+         if (uc1 == 'i' && uc2 == 'w') // iw -> he
+             return QLocale::Hebrew;
+diff --git a/src/corelib/text/qlocale.h b/src/corelib/text/qlocale.h
+index 64dd32cabc..036f064419 100644
+--- a/src/corelib/text/qlocale.h
++++ b/src/corelib/text/qlocale.h
+@@ -501,12 +501,16 @@ public:
+         Chewa = Nyanja,
+         Frisian = WesternFrisian,
+         Kurundi = Rundi,
+-        Moldavian = Romanian,
+-        Norwegian = NorwegianBokmal,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Moldavian Q_DECL_ENUMERATOR_DEPRECATED_X("Obsolete name, use Romanian") = Romanian,
++        Norwegian Q_DECL_ENUMERATOR_DEPRECATED_X("Obsolete name, use NorwegianBokmal") = NorwegianBokmal,
++#endif
+         RhaetoRomance = Romansh,
+-        SerboCroatian = Serbian,
+-        Tagalog = Filipino,
+-        Twi = Akan,
++#if QT_DEPRECATED_SINCE(5, 15)
++        SerboCroatian Q_DECL_ENUMERATOR_DEPRECATED_X("Obsolete name, use Serbian") = Serbian,
++        Tagalog Q_DECL_ENUMERATOR_DEPRECATED_X("Obsolete name, use Filipino") = Filipino,
++        Twi Q_DECL_ENUMERATOR_DEPRECATED_X("Obsolete name, use Akan") = Akan,
++#endif
+         Uigur = Uighur,
+ 
+         LastLanguage = NigerianPidgin
+@@ -933,8 +937,10 @@ public:
+         RepublicOfKorea = SouthKorea,
+         RussianFederation = Russia,
+         SyrianArabRepublic = Syria,
+-        Tokelau = TokelauCountry,
+-        Tuvalu = TuvaluCountry,
++#if QT_DEPRECATED_SINCE(5, 15)
++        Tokelau Q_DECL_ENUMERATOR_DEPRECATED_X("Obsolete name, use TokelauCountry") = TokelauCountry,
++        Tuvalu Q_DECL_ENUMERATOR_DEPRECATED_X("Obsolete name, use TuvaluCountry") = TuvaluCountry,
++#endif
+ 
+         LastCountry = Europe
+     };
+diff --git a/src/corelib/text/qlocale.qdoc b/src/corelib/text/qlocale.qdoc
+index 56f65766dd..f4b9f5b67d 100644
+--- a/src/corelib/text/qlocale.qdoc
++++ b/src/corelib/text/qlocale.qdoc
+@@ -349,9 +349,9 @@
+     \value NorthernSotho
+     \value NorthernThai Obsolete, no locale data available
+     \value NorthNdebele
+-    \value NorwegianBokmal same as Norwegian
++    \value NorwegianBokmal
+     \value NorwegianNynorsk
+-    \value Norwegian same as NorwegianBokmal
++    \value Norwegian Obsolete, please use NorwegianBokmal
+     \value Nuer
+     \value Nyanja
+     \value Nyankole
+diff --git a/tests/auto/corelib/text/qcollator/tst_qcollator.cpp b/tests/auto/corelib/text/qcollator/tst_qcollator.cpp
+index 6806aa09b5..ab1e2638cd 100644
+--- a/tests/auto/corelib/text/qcollator/tst_qcollator.cpp
++++ b/tests/auto/corelib/text/qcollator/tst_qcollator.cpp
+@@ -231,12 +231,12 @@ void tst_QCollator::state()
+     c.setLocale(QLocale::French);
+     c.setNumericMode(true);
+     c.setIgnorePunctuation(true);
+-    c.setLocale(QLocale::Norwegian);
++    c.setLocale(QLocale::NorwegianBokmal);
+ 
+     QCOMPARE(c.caseSensitivity(), Qt::CaseInsensitive);
+     QCOMPARE(c.numericMode(), true);
+     QCOMPARE(c.ignorePunctuation(), true);
+-    QCOMPARE(c.locale(), QLocale(QLocale::Norwegian));
++    QCOMPARE(c.locale(), QLocale(QLocale::NorwegianBokmal));
+ 
+ }
+ 
+diff --git a/tests/auto/corelib/text/qlocale/tst_qlocale.cpp b/tests/auto/corelib/text/qlocale/tst_qlocale.cpp
+index 1afbc169a7..c409494786 100644
+--- a/tests/auto/corelib/text/qlocale/tst_qlocale.cpp
++++ b/tests/auto/corelib/text/qlocale/tst_qlocale.cpp
+@@ -457,12 +457,11 @@ void tst_QLocale::defaulted_ctor()
+     TEST_CTOR("eo", Esperanto, World)
+     TEST_CTOR("yi", Yiddish, World)
+ 
+-    QVERIFY(QLocale::Norwegian == QLocale::NorwegianBokmal);
+-    TEST_CTOR("no", Norwegian, Norway)
+-    TEST_CTOR("nb", Norwegian, Norway)
++    TEST_CTOR("no", NorwegianBokmal, Norway)
++    TEST_CTOR("nb", NorwegianBokmal, Norway)
+     TEST_CTOR("nn", NorwegianNynorsk, Norway)
+-    TEST_CTOR("no_NO", Norwegian, Norway)
+-    TEST_CTOR("nb_NO", Norwegian, Norway)
++    TEST_CTOR("no_NO", NorwegianBokmal, Norway)
++    TEST_CTOR("nb_NO", NorwegianBokmal, Norway)
+     TEST_CTOR("nn_NO", NorwegianNynorsk, Norway)
+     TEST_CTOR("es_ES", Spanish, Spain)
+     TEST_CTOR("es_419", Spanish, LatinAmerica)
+@@ -648,9 +647,9 @@ void tst_QLocale::emptyCtor()
+ 
+ void tst_QLocale::legacyNames()
+ {
+-    QVERIFY(QLocale::Norwegian == QLocale::NorwegianBokmal);
+     QLocale::setDefault(QLocale(QLocale::C));
+ 
++#if QT_DEPRECATED_SINCE(5, 15)
+ #define TEST_CTOR(req_lang, req_country, exp_lang, exp_country) \
+     { \
+         QLocale l(QLocale::req_lang, QLocale::req_country); \
+@@ -664,6 +663,7 @@ void tst_QLocale::legacyNames()
+     TEST_CTOR(Tagalog, AnyCountry, Filipino, Philippines)
+ 
+ #undef TEST_CTOR
++#endif
+ 
+ #define TEST_CTOR(req_lc, exp_lang, exp_country) \
+     { \
+@@ -677,7 +677,7 @@ void tst_QLocale::legacyNames()
+     }
+ 
+     TEST_CTOR("mo_MD", Romanian, Moldova)
+-    TEST_CTOR("no", Norwegian, Norway)
++    TEST_CTOR("no", NorwegianBokmal, Norway)
+     TEST_CTOR("sh_ME", Serbian, Montenegro)
+     TEST_CTOR("tl", Filipino, Philippines)
+     TEST_CTOR("iw", Hebrew, Israel)
+diff --git a/tests/auto/widgets/widgets/qdoublespinbox/tst_qdoublespinbox.cpp b/tests/auto/widgets/widgets/qdoublespinbox/tst_qdoublespinbox.cpp
+index c293a4bdd2..986a830b8b 100644
+--- a/tests/auto/widgets/widgets/qdoublespinbox/tst_qdoublespinbox.cpp
++++ b/tests/auto/widgets/widgets/qdoublespinbox/tst_qdoublespinbox.cpp
+@@ -777,17 +777,17 @@ void tst_QDoubleSpinBox::valueFromTextAndValidate_data()
+     QTest::newRow("data1") << QString() << Intermediate << 0.0 << 100.0 << (int)QLocale::C << QString();
+     QTest::newRow("data2") << QString("asd") << Invalid << 0.0 << 100.0 << (int)QLocale::C << QString();
+     QTest::newRow("data3") << QString("2.2") << Acceptable << 0.0 << 100.0 << (int)QLocale::C << QString();
+-    QTest::newRow("data4") << QString(" ") << Intermediate << 0.0 << 100.0 << (int)QLocale::Norwegian << QString();
++    QTest::newRow("data4") << QString(" ") << Intermediate << 0.0 << 100.0 << (int)QLocale::NorwegianBokmal << QString();
+     QTest::newRow("data5") << QString(" ") << Intermediate << 0.0 << 100.0 << (int)QLocale::C << QString();
+-    QTest::newRow("data6") << QString(",") << Intermediate << 0.0 << 100.0 << (int)QLocale::Norwegian << QString();
++    QTest::newRow("data6") << QString(",") << Intermediate << 0.0 << 100.0 << (int)QLocale::NorwegianBokmal << QString();
+     QTest::newRow("data7") << QString(",") << Invalid << 0.0 << 100.0 << (int)QLocale::C << QString();
+-    QTest::newRow("data8") << QString("1 ") << Acceptable << 0.0 << 1000.0 << (int)QLocale::Norwegian << QString("1");
++    QTest::newRow("data8") << QString("1 ") << Acceptable << 0.0 << 1000.0 << (int)QLocale::NorwegianBokmal << QString("1");
+     QTest::newRow("data9") << QString("1 ") << Acceptable << 0.0 << 100.0 << (int)QLocale::C << QString("1");
+-    QTest::newRow("data10") << QString(" 1") << Acceptable << 0.0 << 100.0 << (int)QLocale::Norwegian << QString("1");
++    QTest::newRow("data10") << QString(" 1") << Acceptable << 0.0 << 100.0 << (int)QLocale::NorwegianBokmal << QString("1");
+     QTest::newRow("data11") << QString(" 1") << Acceptable << 0.0 << 100.0 << (int)QLocale::C << QString("1");
+-    QTest::newRow("data12") << QString("1,") << Acceptable << 0.0 << 100.0 << (int)QLocale::Norwegian << QString();
++    QTest::newRow("data12") << QString("1,") << Acceptable << 0.0 << 100.0 << (int)QLocale::NorwegianBokmal << QString();
+     QTest::newRow("data13") << QString("1,") << Acceptable << 0.0 << 1000.0 << (int)QLocale::C << QString();
+-    QTest::newRow("data14") << QString("1, ") << Acceptable << 0.0 << 100.0 << (int)QLocale::Norwegian << QString("1,");
++    QTest::newRow("data14") << QString("1, ") << Acceptable << 0.0 << 100.0 << (int)QLocale::NorwegianBokmal << QString("1,");
+     QTest::newRow("data15") << QString("1, ") << Invalid << 0.0 << 100.0 << (int)QLocale::C << QString();
+     QTest::newRow("data16") << QString("2") << Intermediate << 100.0 << 102.0 << (int)QLocale::C << QString();
+     QTest::newRow("data17") << QString("22.0") << Intermediate << 100.0 << 102.0 << (int)QLocale::C << QString();
+@@ -826,7 +826,7 @@ void tst_QDoubleSpinBox::valueFromTextAndValidate_data()
+     QTest::newRow("data50") << QString("2.2") << Acceptable << 0.0 << 1000.0 << (int)QLocale::C << QString();
+     QTest::newRow("data51") << QString("2.2,00") << Invalid << 0.0 << 1000.0 << (int)QLocale::C << QString();
+     QTest::newRow("data52") << QString("2..2,00") << Invalid << 0.0 << 1000.0 << (int)QLocale::German << QString();
+-    QTest::newRow("data53") << QString("2.2") << Invalid << 0.0 << 1000.0 << (int)QLocale::Norwegian << QString();
++    QTest::newRow("data53") << QString("2.2") << Invalid << 0.0 << 1000.0 << (int)QLocale::NorwegianBokmal << QString();
+     QTest::newRow("data54") << QString("  2.2") << Acceptable << 0.0 << 1000.0 << (int)QLocale::C << QString();
+     QTest::newRow("data55") << QString("2.2  ") << Acceptable << 0.0 << 1000.0 << (int)QLocale::C << QString("2.2");
+     QTest::newRow("data56") << QString("  2.2  ") << Acceptable << 0.0 << 1000.0 << (int)QLocale::C << QString("2.2");
+diff --git a/tests/auto/widgets/widgets/qspinbox/tst_qspinbox.cpp b/tests/auto/widgets/widgets/qspinbox/tst_qspinbox.cpp
+index f8022559b2..0516bf5a16 100644
+--- a/tests/auto/widgets/widgets/qspinbox/tst_qspinbox.cpp
++++ b/tests/auto/widgets/widgets/qspinbox/tst_qspinbox.cpp
+@@ -877,7 +877,7 @@ void tst_QSpinBox::locale_data()
+     QTest::addColumn<QString>("text");
+     QTest::addColumn<int>("valFromText");
+ 
+-    QTest::newRow("data0") << QLocale(QLocale::Norwegian, QLocale::Norway) << 1234 << QString("1234") << QString("2345") << 2345;
++    QTest::newRow("data0") << QLocale(QLocale::NorwegianBokmal, QLocale::Norway) << 1234 << QString("1234") << QString("2345") << 2345;
+     QTest::newRow("data1") << QLocale(QLocale::German, QLocale::Germany) << 1234 << QString("1234") << QString("2345") << 2345;
+ }
+ 
+-- 
+2.25.1
+
